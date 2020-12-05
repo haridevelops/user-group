@@ -1,20 +1,86 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<nav class="navbar navbar-light" style = "border-bottom: 1px dotted #fcf1f1;">
+  <span class="navbar-brand mb-0 h1" style="    color: #f9813a;">Caavo User Groups</span>
+  <button type="button" class="btn btn-outline-primary" style="border-color: black; color: #f9813a;" title="Create User Group"
+    (click)="createUserGroup()"><i class="fa fa-plus-square-o" aria-hidden="true"></i> Create</button>
+</nav>
 
+<div class="wrapper">
+  <div class="container-fluid">
+    <div style="border: 0; width: fit-content; color: #f9813a;
+    background-color: black;" class="alert" role="alert" *ngIf="userGroups.length === 0">
+      No User Groups Available
+    </div>
+      <div class="table-responsive" style="width: 50%; margin: auto;" *ngIf="userGroups.length > 0">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Group Name</th>
+            <th scope="col">No of Users</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let group of userGroups; let i = index; trackBy: trackGroup">
+            <td scope="row">{{i}}</td>
+            <td>{{group.groupName}}</td>
+            <td>{{group.users.length}}</td>
+            <td style="cursor: pointer;">
+              <i (click)="deleteGroup(group)" class="fa fa-trash-o" style="color: red;" aria-hidden="true"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex-container" *ngIf="showCreateForm">
+      <div style="margin: 15px;">
+        <div class="close-button" (click)="closeContainer()"><i class="fa fa-times" aria-hidden="true"></i></div>
+        <form>
+          <!-- <div class="form-group">
+            <label for="group-logo">Group Logo:</label>
+            <input #input_file hidden (change)="preview($event)" name="logo" type='file' id="group-logo" accept=".png, .jpg, .jpeg" />
+
+            <div class="avatar-preview" (click)="input_file.click();" style="cursor: pointer;">
+              <img id="imagePreview" [src]="imgUrl">
+            </div>
+
+          </div> -->
+          <div class="form-group">
+            <label for="group-name"><b>Group Name:</b></label>
+            <input class="form-control" type="text" id="group-name" name="groupName" [(ngModel)]="groupName" />
+          </div>
+          <div class="form-group">
+            <label for="group-desc"><b>Group Description:</b></label>
+            <textarea class="form-control" type="text" id="group-desc" name="groupDescription" [(ngModel)]="groupDescription" ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="user"><b>Users</b></label>
+          </div>
+        </form>
+        
+        <i (click)="sort(1, 'name')" title="Sort Ascending" style="font-size: large; color: #f9813a; cursor: pointer;margin-right: 10px;" class="fa fa-sort-alpha-asc" aria-hidden="true"></i>
+
+        <i (click)="sort(0, 'name')" title="Sort decending" style="font-size: large; color: #f9813a; cursor: pointer;" class="fa fa-sort-alpha-desc" aria-hidden="true"></i>
+
+        <div style="display: flex; flex-wrap: wrap; height: auto; align-content: flex-start; 
+        justify-content: flex-start; cursor: pointer; ">
+          <div class="card" style="width: 18rem; margin: 20px;" id="user" *ngFor="let user of renderUserList; index as i;"
+          (click)="userSelected(user)">
+              <i *ngIf="user.selected" class="fa fa-check" aria-hidden="true" style="color: #0ed1e6; font-size: xxx-large;
+              opacity: 0.5; position: absolute; top: 0; right: 0;"></i>
+              <img [src]="user?.Image" width="5rem" height="200rem" class="card-img-top" alt="User Image">
+              <div class="card-body">
+                <h5 class="card-title">{{user?.name}}</h5>
+              </div>
+          </div>
+        </div>
+
+        <div class="submit-buttons" style="display: flex; justify-content: center; width: 100;">
+          <button type="button" class="btn btn-success" (click)="createGroup()">Create Group</button>
+        </div>
+      </div>
+    </div>
+  
+  
+  </div>
+</div>
